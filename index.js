@@ -3,7 +3,8 @@ const http = require('http');
 const cors = require('cors');
 require('dotenv').config();
 
-const authRouter =  require('./routes/auth.route.js');
+const authRouter =  require('./routes/auth.route');
+const userRouter = require('./routes/user.route');
 
 // Init express 
 const app = express();
@@ -14,9 +15,10 @@ app.use(express.json());
 app.use(cors());
 
 // API routes
-app.use('/api/auth', authRouter);
+app.use('/api/v1/auth/', authRouter);
+app.use('/api/v1/user/', userRouter);
 
-// Get enviroment vars
+// Get environment vars
 const host = process.env.SERVER_HOST;
 const port = process.env.SERVER_PORT;
 
