@@ -28,7 +28,7 @@ const port = process.env.SERVER_PORT;
 
 
 // Connect to RabbitMQ broker and make channel
-Promise.all([brokerConsumer.initReplyConsumer(), brokerProducer.getChannel()]).then(values => {
+Promise.all([brokerConsumer.initReplyConsumer(), brokerProducer.producerInit()]).then(values => {
     // Start server
     const httpServer = http.createServer(app);
     httpServer.listen(port, host, function () {

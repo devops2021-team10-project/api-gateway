@@ -1,28 +1,17 @@
-const amqp = require('amqplib/callback_api');
+const { channelInit } = require('./rabbitMQConnector');
+const replyQueue = process.env.REPLY_QUEUE;
 
-const init = () => {
-  return new Promise((resolve, reject) => {
-    console.log("Start producer connecting to RabbitMQ");
-    amqp.connect('amqp://user:123456@localhost', (error0, connection) => {
-      if (error0) {
-        reject(error0);
-      }
-      console.log("PRODUCER CONNECTED to RabbitMQ");
-      connection.createChannel((error1, channel) => {
-        if (error1) {
-          reject(error1);
-        }
-        console.log("PRODUCER CHANNEL CREATED on connection");
-        resolve(channel);
-      });
-    });
-  });
-};
 
 let channelSingleton = null;
+const producerInit = async () => {
+  if (channelSingleton === null) {
+    channelSingleton = await channelInit();
+    console.log("PRODUCER CHANNEL CREATED on RabbitMQ");
+  }
+}
 const getChannel = async () => {
   if (channelSingleton === null) {
-    channelSingleton = await init();
+    await producerInit();
   }
   return channelSingleton;
 }
@@ -32,7 +21,7 @@ const produceWithReply = async ({ queue, content, correlationId }) => {
   channel.sendToQueue(queue,
     Buffer.from(JSON.stringify(content)), {
       correlationId: correlationId,
-      replyTo: "apiGateway_replyQueue"
+      replyTo: replyQueue
   });
 };
 
@@ -43,6 +32,7 @@ const produceWithNoReply = async ({ queue, content }) => {
 
 
 module.exports = Object.freeze({
+  producerInit,
   getChannel,
   produceWithReply,
   produceWithNoReply

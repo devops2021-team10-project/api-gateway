@@ -1,32 +1,43 @@
-const amqp = require('amqplib/callback_api');
+const { channelInit } = require('./rabbitMQConnector');
 const eventEmitter = require('./eventEmittler');
 
+const replyQueue = process.env.REPLY_QUEUE;
 
-const initReplyConsumer = () => new Promise((resolve, reject) => {
-    console.log("Start reply-CONSUMER connecting to RabbitMQ");
-    amqp.connect('amqp://user:123456@localhost', (error0, connection) => {
-      if (error0) {
-        reject(error0);
-      }
-      connection.createChannel((error1, channel) => {
-        if (error1) {
-          reject(error1);
-        }
-        channel.assertQueue("apiGateway_replyQueue", { exclusive: false }, () => {
-          channel.consume("apiGateway_replyQueue", (msg) => {
-            eventEmitter.emit(String(msg.properties.correlationId), msg);
-          }, {
-            noAck: true
-          });
-          console.log("reply-CONSUMER connected to RabbitMQ");
-          resolve();
-        });
+
+let channelSingleton = null;
+const consumerInit = async () => {
+  if (channelSingleton === null) {
+    channelSingleton = await channelInit();
+    console.log("CONSUMER CHANNEL CREATED on RabbitMQ");
+  }
+}
+const getChannel = async () => {
+  if (channelSingleton === null) {
+    await consumerInit();
+  }
+  return channelSingleton;
+}
+
+const initReplyConsumer = () => new Promise(async (resolve, reject) => {
+  try {
+    const channel = await getChannel();
+    channel.assertQueue(replyQueue, {exclusive: false}, () => {
+      channel.consume(replyQueue, (msg) => {
+        eventEmitter.emit(String(msg.properties.correlationId), msg);
+      }, {
+        noAck: true
       });
+      console.log("reply-CONSUMER connected to RabbitMQ");
+      resolve(channel);
     });
+  } catch (err) {
+    reject(err);
+  }
 });
 
 
-
 module.exports = Object.freeze({
+  consumerInit,
+  getChannel,
   initReplyConsumer,
 });
