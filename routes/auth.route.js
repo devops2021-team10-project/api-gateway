@@ -3,13 +3,14 @@ const express = require('express');
 const authRouter = express.Router();
 
 // Enums
-const Role = require('../../user-service/utils/role');
+const Role = require('../utils/userRoleEnum');
 
 // JSON request schema validators
 const { authValidator } = require('../schemas/ajv');
 
 // Formatters
-const regularUserFormatter = require('../../user-service/formatters/user/regular-user.formatter');
+const regularUserFormatter = require('../formatters/user/regular-user.formatter');
+const publicRegularUserFormatter = require("../formatters/user/regular-user.formatter");
 
 // Util
 const { handleError } = require('../../user-service/utils/error');
@@ -21,11 +22,11 @@ const { authorizeRoles } = require('../middleware/authorizeRoles.middleware');
 
 // Services
 const authService = require('../services/auth.service');
-const userService = require('../../user-service/services/user.service');
+const userServiceAPI = require('../service-apis/user.service-api');
 
 
 authRouter.post(
-  '/login',
+  '/regularUserLogin',
   async (req, res, next) => {
     try {
 
@@ -64,7 +65,7 @@ authRouter.post(
       return res.status(400).json({ msg: "Invalid token." });
     }
     const data = verifyJWT(req.body.jwt);
-    const user = await userService.findUserById({ id: data.sub });
+    const user = await userServiceAPI.findUserById({ id: data.sub });
     if (!user) {
       return res.status(400).json({ msg: "Bad token. User not found." });
     }

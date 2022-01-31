@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Role = require('../utils/role');
+const Role = require('../utils/userRoleEnum');
 
 
 const regularUserLogin = async ({

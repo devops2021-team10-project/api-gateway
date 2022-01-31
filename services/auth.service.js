@@ -4,7 +4,7 @@ const { issueJWT } = require('../utils/jwt');
 const passwordUtils = require('../../user-service/utils/password');
 
 // DB access
-const userDb = require('../../user-service/data-access/user-db');
+const userServiceAPI = require('../service-apis/user.service-api');
 
 
 const login = async ({
@@ -12,7 +12,7 @@ const login = async ({
     password,
     role
 } = {}) => {
-  const user = await userDb.findByUsername({ username });
+  const user = await userServiceAPI.findUserByUsername({ username });
   if (!user) {
     throw { status: 400, msg: "Bad credentials."};
   }

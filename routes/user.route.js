@@ -4,7 +4,7 @@ const userRouter = express.Router();
 const { differenceInYears, parse } = require('date-fns');
 
 // Enums
-const roleEnum = require('./../utils/role');
+const roleEnum = require('../utils/userRoleEnum');
 
 // JSON request schema validators
 const { userValidator } = require('../schemas/ajv');

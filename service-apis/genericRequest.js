@@ -1,25 +1,37 @@
 const Id = require("../utils/id");
-const brokerConsumer = require("../msgBroker/consumer");
-const brokerProducer = require("../msgBroker/producer");
+
+const brokerProducer = require('../msgBroker/producer');
+const eventEmitter = require('../msgBroker/eventEmittler');
+
+const timeoutError = "Consumer timeout!";
+const timeout = ({ prom, time, clearFunc, exception }) => {
+  let timer;
+  return Promise.race([
+    prom,
+    new Promise((_r, reject) => timer = setTimeout(() => { clearFunc(); reject(); }, time, exception))
+  ]).finally(() => clearTimeout(timer));
+}
+
 
 const sendRequest = async ({ request, queue }) => {
-  return new Promise((resolve, reject) => {
-    const correlationId = Id.makeId();
-    brokerConsumer.consumeCorrelated({
-      queue,
-      correlationId
-    }).then(response => {
-      resolve(response);
-    }).catch((e) => {
-      reject(e);
-    });
+  const correlationId = Id.makeId();
 
-    brokerProducer.produceWithReply({
-      queue,
-      replyQueue: queue,
-      request,
-      correlationId
+  const waitForResponse = new Promise((resolve, _reject) => {
+    eventEmitter.once(String(correlationId), (msg) => {
+      resolve(JSON.parse(msg.content));
     });
+    brokerProducer.produceWithReply({
+      queue: queue,
+      content: request,
+      correlationId: correlationId
+    });
+  });
+
+  return await timeout({
+    prom: waitForResponse,
+    time:  3000,
+    clearFunc: () => eventEmitter.removeAllListeners(String(correlationId)),
+    exception: timeoutError
   });
 };
 
