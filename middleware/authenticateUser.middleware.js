@@ -1,23 +1,13 @@
 
-// Enums
-const microserviceToken = process.env.MICROSERVICE_TOKEN;
-const authAdditionalOptions = require("../utils/authAdditionalOptions");
 
 // Utils
 const { handleError } = require('../../user-service/utils/error');
 const { verifyJWT } = require('../utils/jwt');
 
 // Services
-const userService = require('../../user-service/services/user.service');
-
+const userServiceAPI = require('../service-apis/user.service-api');
 
 const checkCondition = async ({ req }) => {
-  const msTokenHeader = req.headers['microservice-token'];
-  if (msTokenHeader === microserviceToken) {
-    req.isServiceCall = true;
-    return true;
-  }
-
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
     throw "Bad token.";
@@ -29,33 +19,24 @@ const checkCondition = async ({ req }) => {
   }
 
   const data = verifyJWT(jwtToken);
-  const user = await userService.findUserById({ id: data.sub });
+  const serviceResponse = await userServiceAPI.findUserById({ id: data.sub });
+  const user = serviceResponse.data;
   if (!user) {
    throw "Bad token. User not found.";
   }
-  req.user = user;
-  req.isServiceCall = false;
-
-  return req;
+  return user;
 };
 
 
-const authenticateUser = (additionalOptions = []) => {
-  if (typeof additionalOptions === 'string') {
-    additionalOptions = [additionalOptions];
-  }
-  return [
-    async (req, res, next) => {
+const authenticateUser = () => {
+    return async (req, res, next) => {
       try {
-        await checkCondition({ req });
+        req.user = await checkCondition({ req });
         next();
       } catch (err) {
-        if (!additionalOptions.includes(authAdditionalOptions.noError)) {
           return handleError(err, res);
-        }
       }
     }
-  ];
 }
 
 module.exports = Object.freeze({

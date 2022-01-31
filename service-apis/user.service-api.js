@@ -1,5 +1,5 @@
 
-const sendRequest = require('./genericRequest');
+const sendRequest = require('../msgBroker/genericRequest');
 
 const USER_SERVICE_QUEUES = {
   findUserById:               "userService_findUserById",

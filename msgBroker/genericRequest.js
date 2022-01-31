@@ -1,7 +1,7 @@
 const Id = require("../utils/id");
 
-const brokerProducer = require('../msgBroker/producer');
-const eventEmitter = require('../msgBroker/eventEmittler');
+const brokerProducer = require('./producer');
+const eventEmitter = require('./eventEmittler');
 
 const timeoutError = "Consumer timeout!";
 const timeout = ({ prom, time, clearFunc, exception }) => {

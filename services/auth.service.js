@@ -12,16 +12,17 @@ const login = async ({
     password,
     role
 } = {}) => {
-  const user = await userServiceAPI.findUserByUsername({ username });
+  const serviceResponse = await userServiceAPI.findUserByUsername({ username });
+  const user = serviceResponse.data;
   if (!user) {
-    throw { status: 400, msg: "Bad credentials."};
+    throw { status: 400, msg: "Bad credentials 1."};
   }
   if (user.role !== role) {
-    throw { status: 400, msg: "Bad credentials."};
+    throw { status: 400, msg: "Bad credentials 2."};
   }
   const isValid = passwordUtils.validPassword({ password, hash: user.passwordHash, salt: user.passwordSalt });
   if(!isValid) {
-    throw { status: 400, msg: "Bad credentials."};
+    throw { status: 400, msg: "Bad credentials 3."};
   }
   if(user.isBlocked === true) {
     throw { status: 400, msg:"Your account is blocked by administrator" };

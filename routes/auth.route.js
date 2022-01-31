@@ -65,7 +65,8 @@ authRouter.post(
       return res.status(400).json({ msg: "Invalid token." });
     }
     const data = verifyJWT(req.body.jwt);
-    const user = await userServiceAPI.findUserById({ id: data.sub });
+    const serviceResponse = await userServiceAPI.findUserById({ id: data.sub });
+    const user = serviceResponse.data;
     if (!user) {
       return res.status(400).json({ msg: "Bad token. User not found." });
     }
