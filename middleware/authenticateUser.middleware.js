@@ -20,6 +20,9 @@ const checkCondition = async ({ req }) => {
 
   const data = verifyJWT(jwtToken);
   const serviceResponse = await userServiceAPI.findUserById({ id: data.sub });
+  if (serviceResponse.isError) {
+    throw { status: 400, msg: serviceResponse.error}
+  }
   const user = serviceResponse.data;
   if (!user) {
    throw "Bad token. User not found.";

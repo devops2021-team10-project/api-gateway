@@ -13,6 +13,9 @@ const login = async ({
     role
 } = {}) => {
   const serviceResponse = await userServiceAPI.findUserByUsername({ username });
+  if (serviceResponse.isError) {
+    throw { status: 400, msg: serviceResponse.error}
+  }
   const user = serviceResponse.data;
   if (!user) {
     throw { status: 400, msg: "Bad credentials 1."};
