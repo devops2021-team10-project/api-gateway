@@ -163,7 +163,7 @@ const resetPassword = async (req, res, next) => {
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error}
     }
-    return res.sendStatus(200);
+    return res.status(200).json({});
   } catch(err) {
     handleError(err, res);
   }
@@ -183,7 +183,7 @@ const changeIsPrivate = async (req, res, next) => {
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error}
     }
-    return res.sendStatus(200);
+    return res.status(200).json({});
   } catch(err) {
     handleError(err, res);
   }
@@ -203,7 +203,7 @@ const changeIsTaggable = async (req, res, next) => {
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error}
     }
-    return res.sendStatus(200);
+    return res.status(200).json({});
   } catch(err) {
     handleError(err, res);
   }
@@ -224,7 +224,7 @@ const changeMutedProfile = async (req, res, next) => {
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error}
     }
-    return res.sendStatus(200);
+    return res.status(200).json({});
   } catch(err) {
     handleError(err, res);
   }
@@ -245,7 +245,7 @@ const changeBlockedProfile = async (req, res, next) => {
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error}
     }
-    return res.sendStatus(200);
+    return res.status(200).json({});
   } catch(err) {
     handleError(err, res);
   }
@@ -261,7 +261,7 @@ const deleteRegularUser = async (req, res, next) => {
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error}
     }
-    return res.status(200).send("");
+    return res.status(200).json({});
   } catch(err) {
     handleError(err, res);
   }
