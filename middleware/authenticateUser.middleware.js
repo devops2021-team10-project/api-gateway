@@ -10,12 +10,12 @@ const userServiceAPI = require('../service-apis/user.service-api');
 const checkCondition = async ({ req }) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
-    throw "Bad token.";
+    throw { status: 400, msg: "No token header." };
   }
 
   const jwtToken = authHeader && authHeader.split(' ')[1]
   if (!jwtToken) {
-    throw "Bad token.";
+    throw { status: 400, msg: "Bad token format." };
   }
 
   const data = verifyJWT(jwtToken);
@@ -25,7 +25,7 @@ const checkCondition = async ({ req }) => {
   }
   const user = serviceResponse.data;
   if (!user) {
-   throw "Bad token. User not found.";
+    throw { status: 400, msg: "Bad token - user not found." };
   }
   return user;
 };

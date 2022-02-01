@@ -15,7 +15,7 @@ const checkCondition = async (req) => {
   });
   if (followedUser.isPrivate) {
     if (!(req.user?.id === req.params.followerUserId && following?.isApproved)) {
-      throw "You do not have permission to access to this resource. - authFollowing.";
+      throw { status: 400, msg: "You do not have permission to access to this resource. - authFollowing." };
     }
   }
 };

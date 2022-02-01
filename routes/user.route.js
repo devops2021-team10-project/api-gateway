@@ -1,10 +1,5 @@
 // Main
-const express = require('express');
-const userRouter = express.Router();
 const { differenceInYears, parse } = require('date-fns');
-
-// Enums
-const roleEnum = require('../utils/userRoleEnum');
 
 // JSON request schema validators
 const { userValidator } = require('../schemas/ajv');
@@ -18,8 +13,6 @@ const { handleError } = require('./../utils/error');
 
 // Microservice calls
 const userServiceAPI = require('../service-apis/user.service-api');
-const {authenticateUser} = require("../middleware/authenticateUser.middleware");
-const {authorizeRoles} = require("../middleware/authorizeRoles.middleware");
 
 
 // Find user by username (public)
@@ -27,7 +20,7 @@ const findPublicUserByUsername = async (req, res, next) => {
   try {
     const username = req.params.username;
     if (!username) {
-      throw { status: 400, msg: "Bad request" }
+      throw { status: 400, msg: "Bad request" };
     }
     const serviceResponse = await userServiceAPI.findUserByUsername({ username });
     if (serviceResponse.isError) {
@@ -35,7 +28,7 @@ const findPublicUserByUsername = async (req, res, next) => {
     }
     const user = serviceResponse.data;
     if (!user) {
-      throw { status: 400, msg: "User with given username does not exist." }
+      throw { status: 400, msg: "User with given username does not exist." };
     }
     return res.status(200).json(publicRegularUserFormatter.format(user));
   } catch(err) {
@@ -48,15 +41,15 @@ const findPublicUserById = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     if (!userId) {
-      throw { status: 400, msg: "Bad request" }
+      throw { status: 400, msg: "Bad request" };
     }
     const serviceResponse = await userServiceAPI.findUserById({ id: userId });
     if (serviceResponse.isError) {
-      throw { status: 400, msg: serviceResponse.error}
+      throw { status: 400, msg: serviceResponse.error};
     }
     const user = serviceResponse.data;
     if (!user) {
-      throw { status: 400, msg: "User with given id does not exist." }
+      throw { status: 400, msg: "User with given id does not exist." };
     }
     return res.status(200).json(publicRegularUserFormatter.format(user));
   } catch(err) {
@@ -69,7 +62,7 @@ const searchPublicUsersByName = async (req, res, next) => {
   try {
     const name = req.params.name;
     if (!name) {
-      throw "Bad request";
+      throw { status: 400, msg: "Bad request." };
     }
     console.log(name)
 
@@ -92,23 +85,23 @@ const searchPublicUsersByName = async (req, res, next) => {
 const registerRegularUser = async (req, res, next) => {
   try {
     if (!userValidator.validateCreate(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
     // Check age
     try {
       const birthday = parse(req.body.birthday, 'dd.MM.yyyy.', new Date());
       const age = differenceInYears(new Date(), birthday);
       if (age < 13) {
-        throw "You are under legal age to use social media platform.";
+        throw { status: 400, msg: "You are under legal age to use social media platform." };
       }
     } catch (err) {
-      throw "Bad date format.";
+      throw { status: 400, msg: "Bad date format." };
     }
 
     const serviceResponse = await userServiceAPI.registerRegularUser({ userData: req.body });
     console.log(serviceResponse);
     if (serviceResponse.isError) {
-      throw { status: 400, msg: serviceResponse.error}
+      throw { status: 400, msg: serviceResponse.error };
     }
 
     const insertedUser = serviceResponse.data;
@@ -123,7 +116,7 @@ const registerRegularUser = async (req, res, next) => {
 const updateRegularUser = async (req, res, next) => {
   try {
     if (!userValidator.validateUpdate(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
 
     // Check age
@@ -131,10 +124,10 @@ const updateRegularUser = async (req, res, next) => {
       const birthday = parse(req.body.birthday, 'dd.MM.yyyy.', new Date());
       const age = differenceInYears(new Date(), birthday);
       if (age < 13) {
-        throw "You are under legal age to use social media platform."
+        throw { status: 400, msg: "You are under legal age to use social media platform." };
       }
     } catch (err) {
-      throw "Bad date format.";
+      throw { status: 400, msg: "Bad date format." };
     }
 
     const serviceResponse = await userServiceAPI.updateRegularUser({ userId: req.user.id, userData: req.body });
@@ -153,7 +146,7 @@ const updateRegularUser = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
   try {
     if (!userValidator.validatePasswordReset(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
     const serviceResponse = await userServiceAPI.resetPassword({
       userId: req.user.id,
@@ -174,7 +167,7 @@ const resetPassword = async (req, res, next) => {
 const changeIsPrivate = async (req, res, next) => {
   try {
     if (!userValidator.validateChangeIsPrivate(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
     const serviceResponse = await userServiceAPI.changeIsPrivate({
       userId: req.user.id,
@@ -194,7 +187,7 @@ const changeIsPrivate = async (req, res, next) => {
 const changeIsTaggable = async (req, res, next) => {
   try {
     if (!userValidator.validateChangeIsTaggable(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
     const serviceResponse = await userServiceAPI.changeIsTaggable({
       userId: req.user.id,
@@ -214,7 +207,7 @@ const changeIsTaggable = async (req, res, next) => {
 const changeMutedProfile = async (req, res, next) => {
   try {
     if (!userValidator.validateChangeMutedProfile(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
     const serviceResponse = await userServiceAPI.changeMutedProfile({
       id: req.user.id,
@@ -235,7 +228,7 @@ const changeMutedProfile = async (req, res, next) => {
 const changeBlockedProfile = async (req, res, next) => {
   try {
     if (!userValidator.validateChangeBlockedProfile(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad data." };
     }
     const serviceResponse = await userServiceAPI.changeBlockedProfile({
       id: req.user.id,

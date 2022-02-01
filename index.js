@@ -8,11 +8,13 @@ const brokerProducer = require('./msgBroker/producer');
 
 const authRouter =  require('./routes/auth.route');
 const userRouter = require('./routes/user.route');
+const postRouter = require('./routes/post.route');
 
 // Middleware
 const { authenticateUser } = require('./middleware/authenticateUser.middleware');
 const { authorizeRoles } = require('./middleware/authorizeRoles.middleware');
 const { authorizeFollowing } = require('./middleware/authorizeFollowing.middleware');
+const { multerUploader } = require('./middleware/fileUpload');
 
 // Enum
 const roleEnum = require("./utils/userRoleEnum");
@@ -47,6 +49,10 @@ app.delete('/api/v1/user', authenticateUser(), authorizeRoles([roleEnum.regular]
 
 
 
+// POST API ROUTES
+app.post('./api/v1/post', authenticateUser(), authorizeRoles([roleEnum.regular]), multerUploader.single('image'), postRouter.create);
+
+
 // Get environment vars
 const host = process.env.SERVER_HOST;
 const port = process.env.SERVER_PORT;
@@ -58,7 +64,7 @@ Promise.all([brokerConsumer.initReplyConsumer(), brokerProducer.producerInit()])
     const httpServer = http.createServer(app);
     httpServer.listen(port, host, function () {
         console.log('Server listening on port ' + port);
-        console.log("Ready");
+        console.log("API Gateway - Ready");
     });
 });
 

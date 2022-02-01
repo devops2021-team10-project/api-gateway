@@ -12,6 +12,7 @@ ajv.addFormat("general_name", /^[a-zA-Z0-9][^\n]{0,200}$/);
 ajv.addFormat("identifier", /^[_a-zA-Z][_a-zA-Z0-9]{0,100}$/);
 ajv.addFormat("number", /^[0-9]+$/);
 ajv.addFormat("phone", /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/);
+ajv.addFormat("hashtag", /^#[_a-zA-Z][_a-zA-Z0-9]{0,100}$/);
 
 
 module.exports = Object.freeze({
@@ -27,5 +28,8 @@ module.exports = Object.freeze({
     validateChangeIsTaggable: ajv.compile(require('./user/changeIsTaggable')),
     validateChangeMutedProfile: ajv.compile(require('./user/changeMutedProfile')),
     validateChangeBlockedProfile: ajv.compile(require('./user/changeBlockedProfile'))
+  },
+  postValidator: {
+    validateCreate: ajv.compile(require('./post/create'))
   }
 });

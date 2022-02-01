@@ -1,6 +1,3 @@
-// Main
-const express = require('express');
-const authRouter = express.Router();
 
 // Enums
 const Role = require('../utils/userRoleEnum');
@@ -24,7 +21,7 @@ const regularUserLogin = async (req, res, next) => {
   try {
 
     if (!authValidator.validateLogin(req.body)) {
-      throw "Bad data.";
+      throw { status: 400, msg: "Bad login data." };
     }
 
     const { accessToken, refreshToken } = await authService.login({
@@ -50,7 +47,7 @@ const findByJWTHeader = async (req, res, next) => {
 const findByJWTValue = async (req, res, next) => {
   try {
     if (!(req.body.hasOwnProperty('jwt') && typeof req.body.jwt === 'string' && req.body.jwt.length > 5)) {
-      return res.status(400).json({ msg: "Invalid token." });
+      throw { status: 400, msg: "Invalid token." };
     }
     const data = verifyJWT(req.body.jwt);
     const serviceResponse = await userServiceAPI.findUserById({ id: data.sub });
@@ -59,7 +56,7 @@ const findByJWTValue = async (req, res, next) => {
     }
     const user = serviceResponse.data;
     if (!user) {
-      return res.status(400).json({ msg: "Bad token. User not found." });
+      throw { status: 400, msg: "Bad token. User not found."}
     }
     return res.status(200).json(regularUserFormatter.format(user));
   } catch(err) {

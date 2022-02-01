@@ -3,7 +3,7 @@ const { handleError } = require("../../user-service/utils/error");
 
 const checkCondition = async ({ req, roles }) => {
   if (!req.isServiceCall && req.user && !roles.includes(req.user.role)) {
-    throw "You do not have permission to access to this resource. - authRoles.";
+    throw { status: 400, msg: "You do not have permission to access to this resource. - authRoles." };
   }
 };
 

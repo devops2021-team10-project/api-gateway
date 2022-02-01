@@ -1,3 +1,6 @@
+# File storage
+file_storage/
+
 # Logs
 logs
 *.log
