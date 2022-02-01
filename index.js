@@ -50,7 +50,10 @@ app.delete('/api/v1/user', authenticateUser(), authorizeRoles([roleEnum.regular]
 
 
 // POST API ROUTES
-app.post('./api/v1/post', authenticateUser(), authorizeRoles([roleEnum.regular]), multerUploader.single('image'), postRouter.create);
+app.get('/api/v1/post/:postId', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.findPostById);
+app.get('/api/v1/post/allByUser/:userId', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.findPostsByUserId);
+app.get('/api/v1/post/:postId/image', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.findPostImageByPostId);
+app.post('/api/v1/post', authenticateUser(), authorizeRoles([roleEnum.regular]), multerUploader.single('image'), postRouter.create);
 
 
 // Get environment vars
