@@ -3,7 +3,7 @@ name: Publish prerelease image
 on:
   push:
     branches:
-      - development
+      - develop
 
 jobs:
   publish-prerelease:
