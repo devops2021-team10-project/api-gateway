@@ -12,10 +12,10 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-  - stage: SonarCloud Analysis
+  - stage: SonarCloud_Analysis
     displayName: SonarCloud Analysis
     jobs:
-      - job: SonarCloudAnalysis
+      - job: SonarCloud_Analysis
         displayName: SonarCloud Analysis
         steps:
           - task: SonarCloudPrepare@1
