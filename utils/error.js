@@ -3,7 +3,7 @@ const handleError = (err, res) => {
     return res.status(err.status).json({ msg: err.msg });
   } else {
     console.log(err);
-    return res.status(500).json({ msg: err.toString() });
+    return res.status(500).json({ msg: String(err) });
   }
 }
 
