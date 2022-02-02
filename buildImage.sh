@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 VERSION=${1}
 DOCKERHUB_USERNAME=${2}
 DOCKERHUB_PASSWORD=${3}
