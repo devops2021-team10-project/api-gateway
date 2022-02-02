@@ -31,13 +31,16 @@ const checkCondition = async ({ req }) => {
 };
 
 
-const authenticateUser = () => {
+const authenticateUser = ({ passTheError } = {passTheError: false}) => {
     return async (req, res, next) => {
       try {
         req.user = await checkCondition({ req });
         next();
       } catch (err) {
+        if (!passTheError) {
           return handleError(err, res);
+        }
+        next();
       }
     }
 }

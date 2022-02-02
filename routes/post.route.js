@@ -4,6 +4,7 @@ const { postValidator } = require('../schemas/ajv');
 
 // Utils
 const { handleError } = require('./../utils/error');
+const { checkCondition } = require('../middleware/authorizeFollowing.middleware');
 
 // Microservice calls
 const postServiceAPI = require('../service-apis/post.service-api');
@@ -20,6 +21,9 @@ const findPostById = async (req, res, next) => {
       throw { status: 400, msg: serviceResponse.error };
     }
     const post = serviceResponse.data;
+
+    await checkCondition({followerUserId: req.user?.id, followedUserId: post.authorUserId});
+
     return res.status(200).json(post);
   } catch(err) {
     handleError(err, res);
@@ -28,11 +32,14 @@ const findPostById = async (req, res, next) => {
 
 
 const findPostsByUserId = async (req, res, next) => {
+  console.log("ENTER");
   try {
     const userId = req.params.userId;
     if (!userId) {
       throw { status: 400, msg: "Bad request, cannot get user" };
     }
+    await checkCondition({ followerUserId: req.user?.id, followedUserId: req.params.userId });
+
     const serviceResponse = await postServiceAPI.findPostsByUserId({ userId: userId });
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error };
@@ -57,6 +64,9 @@ const findPostImageByPostId = async (req, res, next) => {
       throw { status: 400, msg: serviceResponse.error };
     }
     const post = serviceResponse.data;
+
+    await checkCondition({followerUserId: req.user?.id, followedUserId: post.authorUserId});
+
     const file = post.imageInfo.path;
     res.download(file);
   } catch(err) {

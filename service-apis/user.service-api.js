@@ -9,9 +9,6 @@ const USER_SERVICE_QUEUES = {
   updateRegularUser:          "userService_updateRegularUser",
   resetPassword:              "userService_resetPassword",
   changeIsPrivate:            "userService_changeIsPrivate",
-  changeIsTaggable:           "userService_changeIsTaggable",
-  changeMutedProfile:         "userService_changeMutedProfile",
-  changeBlockedProfile:       "userService_changeBlockedProfile",
   delete:                     "userService_delete"
 };
 
@@ -65,35 +62,12 @@ const changeIsPrivate = async ({ userId, value }) => {
   });
 };
 
-const changeIsTaggable = async ({ userId, value }) => {
-  return await sendRequest({
-    request: { userId, value },
-    queue: USER_SERVICE_QUEUES.changeIsTaggable
-  });
-};
-
-const changeMutedProfile = async ({ id, toMuteUserId, isMuted }) => {
-  return await sendRequest({
-    request: { id, toMuteUserId, isMuted },
-    queue: USER_SERVICE_QUEUES.changeMutedProfile
-  });
-};
-
-const changeBlockedProfile = async ({ id, toBlockUserId, isBlocked }) => {
-  return await sendRequest({
-    request: { id, toBlockUserId, isBlocked },
-    queue: USER_SERVICE_QUEUES.changeBlockedProfile
-  });
-};
-
-
 const deleteUser = async ({ id }) => {
   return await sendRequest({
     request: { id },
     queue: USER_SERVICE_QUEUES.delete
   });
 };
-
 
 
 
@@ -105,8 +79,5 @@ module.exports = Object.freeze({
   updateRegularUser,
   resetPassword,
   changeIsPrivate,
-  changeIsTaggable,
-  changeMutedProfile,
-  changeBlockedProfile,
   deleteUser
 });

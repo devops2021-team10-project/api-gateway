@@ -13,7 +13,18 @@ const { handleError } = require('./../utils/error');
 
 // Microservice calls
 const userServiceAPI = require('../service-apis/user.service-api');
+const followingServiceAPI = require('../service-apis/following.service-api');
 
+const incorporateFollowingData = async ({ operatorUserId, user }) => {
+  const serviceResponse = await followingServiceAPI.findByUserIds({
+    followerUserId: operatorUserId,
+    followedUserId: user.id
+  });
+  if (serviceResponse.isError) {
+    throw { status: 400, msg: serviceResponse.error}
+  }
+  user.followingData = serviceResponse.data;
+}
 
 // Find user by username (public)
 const findPublicUserByUsername = async (req, res, next) => {
@@ -30,7 +41,16 @@ const findPublicUserByUsername = async (req, res, next) => {
     if (!user) {
       throw { status: 400, msg: "User with given username does not exist." };
     }
-    return res.status(200).json(publicRegularUserFormatter.format(user));
+
+    const retData = publicRegularUserFormatter.format(user);
+    if (req.user) {
+      await incorporateFollowingData({
+        operatorUserId: req.user.id,
+        user: retData
+      })
+    }
+
+    return res.status(200).json(retData);
   } catch(err) {
     handleError(err, res);
   }
@@ -51,7 +71,14 @@ const findPublicUserById = async (req, res, next) => {
     if (!user) {
       throw { status: 400, msg: "User with given id does not exist." };
     }
-    return res.status(200).json(publicRegularUserFormatter.format(user));
+    const retData = publicRegularUserFormatter.format(user);
+    if (req.user) {
+      await incorporateFollowingData({
+        operatorUserId: req.user.id,
+        user: retData
+      })
+    }
+    return res.status(200).json(retData);
   } catch(err) {
     handleError(err, res);
   }
@@ -64,7 +91,6 @@ const searchPublicUsersByName = async (req, res, next) => {
     if (!name) {
       throw { status: 400, msg: "Bad request." };
     }
-    console.log(name)
 
     const serviceResponse = await userServiceAPI.searchByName({ name });
     if (serviceResponse.isError) {
@@ -99,7 +125,6 @@ const registerRegularUser = async (req, res, next) => {
     }
 
     const serviceResponse = await userServiceAPI.registerRegularUser({ userData: req.body });
-    console.log(serviceResponse);
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error };
     }
@@ -183,68 +208,6 @@ const changeIsPrivate = async (req, res, next) => {
 };
 
 
-// Change IsTaggable value
-const changeIsTaggable = async (req, res, next) => {
-  try {
-    if (!userValidator.validateChangeIsTaggable(req.body)) {
-      throw { status: 400, msg: "Bad data." };
-    }
-    const serviceResponse = await userServiceAPI.changeIsTaggable({
-      userId: req.user.id,
-      value: req.body.isTaggable,
-    });
-    if (serviceResponse.isError) {
-      throw { status: 400, msg: serviceResponse.error}
-    }
-    return res.status(200).json({});
-  } catch(err) {
-    handleError(err, res);
-  }
-};
-
-
-// Change muted profile
-const changeMutedProfile = async (req, res, next) => {
-  try {
-    if (!userValidator.validateChangeMutedProfile(req.body)) {
-      throw { status: 400, msg: "Bad data." };
-    }
-    const serviceResponse = await userServiceAPI.changeMutedProfile({
-      id: req.user.id,
-      toMuteUserId: req.body.toMuteUserId,
-      isMuted: req.body.isMuted,
-    });
-    if (serviceResponse.isError) {
-      throw { status: 400, msg: serviceResponse.error}
-    }
-    return res.status(200).json({});
-  } catch(err) {
-    handleError(err, res);
-  }
-};
-
-
-// Change blocked profile
-const changeBlockedProfile = async (req, res, next) => {
-  try {
-    if (!userValidator.validateChangeBlockedProfile(req.body)) {
-      throw { status: 400, msg: "Bad data." };
-    }
-    const serviceResponse = await userServiceAPI.changeBlockedProfile({
-      id: req.user.id,
-      toBlockUserId: req.body.toBlockUserId,
-      isBlocked: req.body.isBlocked,
-    });
-    if (serviceResponse.isError) {
-      throw { status: 400, msg: serviceResponse.error}
-    }
-    return res.status(200).json({});
-  } catch(err) {
-    handleError(err, res);
-  }
-};
-
-
 // Delete user
 const deleteRegularUser = async (req, res, next) => {
   try {
@@ -268,8 +231,5 @@ module.exports = Object.freeze({
   updateRegularUser,
   resetPassword,
   changeIsPrivate,
-  changeIsTaggable,
-  changeMutedProfile,
-  changeBlockedProfile,
   deleteRegularUser
 })

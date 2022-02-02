@@ -17,12 +17,8 @@ const format = (user) => {
     biography: user.biography,
 
     isPrivate: user.isPrivate,
-    isTaggable: user.isTaggable,
 
-    mutedProfiles: user.mutedProfiles,
-    blockedProfiles: user.blockedProfiles,
-
-    isBlocked: user.isBlocked,
+    followingData: null,
     createdAt: user.createdAt,
     deletedAt: user.deletedAt,
   }

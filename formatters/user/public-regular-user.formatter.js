@@ -11,6 +11,8 @@ const format = (user) => {
     biography: user.biography,
 
     isPrivate: user.isPrivate,
+
+    followingData: null,
   }
 }
 
