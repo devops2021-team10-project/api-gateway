@@ -32,4 +32,4 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
 
       - name: Build docker image
-        run: ./buildImages.sh ${{ steps.tag_version.outputs.new_tag }} ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: ./buildImage.sh ${{ steps.tag_version.outputs.new_tag }} ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_PASSWORD }}
