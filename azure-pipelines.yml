@@ -1,0 +1,32 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+  - stage: SonarCloud Analysis
+    displayName: SonarCloud Analysis
+    jobs:
+      - job: SonarCloudAnalysis
+        displayName: SonarCloud Analysis
+        steps:
+          - task: SonarCloudPrepare@1
+            inputs:
+              SonarCloud: 'SonarCloud connection'
+              organization: 'devops2021-team10'
+              scannerMode: 'CLI'
+              configMode: 'file'
+          - task: SonarCloudAnalyze@1
+          - task: SonarCloudPublish@1
+            inputs:
+              pollingTimeoutSec: '300'
+
+
