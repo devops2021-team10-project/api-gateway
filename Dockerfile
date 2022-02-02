@@ -8,5 +8,5 @@ COPY ./source/package.json ./package.json
 RUN npm install
 
 # Copy code
-COPY ./source ./
+COPY ./ ./
 
