@@ -28,7 +28,7 @@ const checkCondition = async ({ followerUserId = null, followedUserId }) => {
   }
   const following1 = serviceResponse2.data;
 
-  if (!following1 || !following1?.isApproved) {
+  if (!following1 || (following1?.isFollowing && !following1?.isApproved)) {
     throw { status: 400, msg: "You cannot view this profile 1" };
   }
 

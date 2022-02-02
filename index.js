@@ -34,6 +34,7 @@ app.post('/api/v1/auth/public/regularUserLogin', authRouter.regularUserLogin);
 app.get('/api/v1/auth/findByJWTHeader', authenticateUser(), authRouter.findByJWTHeader);
 app.post('/api/v1/auth/public/findByJWTValue', authRouter.findByJWTValue);
 
+
 // USER API ROUTES
 app.get('/api/v1/user/public/byUsername/:username', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), userRouter.findPublicUserByUsername);
 app.get('/api/v1/user/public/byId/:userId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), userRouter.findPublicUserById);
@@ -44,11 +45,15 @@ app.put('/api/v1/user/resetPassword', authenticateUser(), authorizeRoles([roleEn
 app.put('/api/v1/user/changeIsPrivate', authenticateUser(), authorizeRoles([roleEnum.regular]), userRouter.changeIsPrivate);
 app.delete('/api/v1/user', authenticateUser(), authorizeRoles([roleEnum.regular]), userRouter.deleteRegularUser);
 
+
 // POST API ROUTES
 app.get('/api/v1/post/:postId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostById);
 app.get('/api/v1/post/allByUser/:userId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostsByUserId);
 app.get('/api/v1/post/:postId/image', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostImageByPostId);
 app.post('/api/v1/post', authenticateUser(), authorizeRoles([roleEnum.regular]), multerUploader.single('image'), postRouter.create);
+app.put('/api/v1/post/changeIsLiked', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.changeLikedPost);
+app.put('/api/v1/post/changeIsDisliked', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.changeDislikedPost);
+
 
 // FOLLOWING API ROUTES
 app.put('/api/v1/following/follow/:userId', authenticateUser(), authorizeRoles([roleEnum.regular]), followingRouter.follow);

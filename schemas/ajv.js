@@ -30,6 +30,8 @@ module.exports = Object.freeze({
     validateChangeBlockedProfile: ajv.compile(require('./user/changeBlockedProfile'))
   },
   postValidator: {
-    validateCreate: ajv.compile(require('./post/create'))
+    validateCreate: ajv.compile(require('./post/create')),
+    validateChangeLikedPost: ajv.compile(require('./post/changeLikedPost')),
+    validateChangeDislikedPost: ajv.compile(require('./post/changeLikedPost'))
   }
 });
