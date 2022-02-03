@@ -15,7 +15,7 @@ const checkCondition = async ({ followerUserId = null, followedUserId }) => {
   }
   const followedUser = serviceResponse1.data;
 
-  if (followerUserId === null &&!followedUser.isPrivate) {
+  if (followerUserId === null && !followedUser.isPrivate) {
     return true;
   }
 
@@ -28,7 +28,11 @@ const checkCondition = async ({ followerUserId = null, followedUserId }) => {
   }
   const following1 = serviceResponse2.data;
 
-  if (!following1 || !following1?.isApproved) {
+  console.log("follower: " + followerUserId);
+  console.log("followed: " + followedUserId);
+  console.log(following1);
+
+  if ((!following1 && followedUser.isPrivate) || (following1?.isFollowing && !following1?.isApproved)) {
     throw { status: 400, msg: "You cannot view this profile 1" };
   }
 

@@ -31,8 +31,11 @@ app.use(cors());
 
 // AUTH API ROUTES
 app.post('/api/v1/auth/public/regularUserLogin', authRouter.regularUserLogin);
+app.post('/api/v1/auth/public/adminUserLogin', authRouter.adminUserLogin);
+app.post('/api/v1/auth/public/agentUserLogin', authRouter.agentUserLogin);
 app.get('/api/v1/auth/findByJWTHeader', authenticateUser(), authRouter.findByJWTHeader);
 app.post('/api/v1/auth/public/findByJWTValue', authRouter.findByJWTValue);
+
 
 // USER API ROUTES
 app.get('/api/v1/user/public/byUsername/:username', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), userRouter.findPublicUserByUsername);
@@ -44,13 +47,21 @@ app.put('/api/v1/user/resetPassword', authenticateUser(), authorizeRoles([roleEn
 app.put('/api/v1/user/changeIsPrivate', authenticateUser(), authorizeRoles([roleEnum.regular]), userRouter.changeIsPrivate);
 app.delete('/api/v1/user', authenticateUser(), authorizeRoles([roleEnum.regular]), userRouter.deleteRegularUser);
 
+
 // POST API ROUTES
 app.get('/api/v1/post/:postId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostById);
 app.get('/api/v1/post/allByUser/:userId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostsByUserId);
 app.get('/api/v1/post/:postId/image', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostImageByPostId);
 app.post('/api/v1/post', authenticateUser(), authorizeRoles([roleEnum.regular]), multerUploader.single('image'), postRouter.create);
+app.put('/api/v1/post/changeIsLiked', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.changeLikedPost);
+app.put('/api/v1/post/changeIsDisliked', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.changeDislikedPost);
+app.post('/api/v1/post/createComment', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.createComment);
+
 
 // FOLLOWING API ROUTES
+app.get('/api/v1/following/whoIFollow', authenticateUser(), authorizeRoles([roleEnum.regular, roleEnum.agent]), followingRouter.findAllWhoIFollow);
+app.get('/api/v1/following/whoFollowMe', authenticateUser(), authorizeRoles([roleEnum.regular, roleEnum.agent]), followingRouter.findAllWhoFollowMe);
+app.get('/api/v1/following/requests', authenticateUser(), authorizeRoles([roleEnum.regular, roleEnum.agent]), followingRouter.findAllMyReceivedFollowRequests);
 app.put('/api/v1/following/follow/:userId', authenticateUser(), authorizeRoles([roleEnum.regular]), followingRouter.follow);
 app.put('/api/v1/following/unfollow/:userId', authenticateUser(), authorizeRoles([roleEnum.regular]), followingRouter.unfollow);
 app.put('/api/v1/following/approve/:userId', authenticateUser(), authorizeRoles([roleEnum.regular]), followingRouter.approveFollowing);

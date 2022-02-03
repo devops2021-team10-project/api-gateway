@@ -1,4 +1,4 @@
-const { handleError } = require("../../user-service/utils/error");
+const { handleError } = require("../utils/error");
 
 
 const checkCondition = async ({ req, roles }) => {

@@ -4,9 +4,11 @@ FROM node:16-buster
 WORKDIR /usr/src/app
 
 # Install deps
-COPY ./source/package.json ./package.json
+COPY ./package.json ./package.json
 RUN npm install
 
 # Copy code
-COPY ./source ./
+COPY ./ ./
+
+COPY ./.env.docker ./.env
 
