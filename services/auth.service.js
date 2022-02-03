@@ -1,7 +1,7 @@
 
 // Utils
 const { issueJWT } = require('../utils/jwt');
-const passwordUtils = require('../../user-service/utils/password');
+const passwordUtils = require('../utils/password');
 
 // DB access
 const userServiceAPI = require('../service-apis/user.service-api');

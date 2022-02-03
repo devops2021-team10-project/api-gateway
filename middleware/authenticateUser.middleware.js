@@ -1,7 +1,7 @@
 
 
 // Utils
-const { handleError } = require('../../user-service/utils/error');
+const { handleError } = require('../utils/error');
 const { verifyJWT } = require('../utils/jwt');
 
 // Services

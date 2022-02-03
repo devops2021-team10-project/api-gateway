@@ -6,6 +6,48 @@ const { checkCondition } = require('../middleware/authorizeFollowing.middleware'
 const followingServiceAPI = require('../service-apis/following.service-api');
 
 
+const findAllWhoIFollow = async (req, res, next) => {
+  try {
+    const serviceResponse = await followingServiceAPI.findAllWhoIFollow({
+      followerUserId: req.user.id
+    });
+    if (serviceResponse.isError) {
+      throw { status: 400, msg: serviceResponse.error };
+    }
+    return res.status(200).json(serviceResponse.data);
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
+const findAllWhoFollowMe = async (req, res, next) => {
+  try {
+    const serviceResponse = await followingServiceAPI.findAllWhoFollowMe({
+      followedUserId: req.user.id
+    });
+    if (serviceResponse.isError) {
+      throw { status: 400, msg: serviceResponse.error };
+    }
+    return res.status(200).json(serviceResponse.data);
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
+const findAllMyReceivedFollowRequests = async (req, res, next) => {
+  try {
+    const serviceResponse = await followingServiceAPI.findAllMyReceivedFollowRequests({
+      followedUserId: req.user.id
+    });
+    if (serviceResponse.isError) {
+      throw { status: 400, msg: serviceResponse.error };
+    }
+    return res.status(200).json(serviceResponse.data);
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
 const follow = async (req, res, next) => {
   try {
     const userId = req.params.userId;
@@ -55,8 +97,8 @@ const approveFollowing = async (req, res, next) => {
       throw { status: 400, msg: "Bad request, cannot get user data" };
     }
     const serviceResponse = await followingServiceAPI.approveFollowing({
-      followerUserId: req.user.id,
-      followedUserId: userId,
+      followerUserId: userId,
+      followedUserId: req.user.id,
     });
     if (serviceResponse.isError) {
       throw { status: 400, msg: serviceResponse.error };
@@ -164,6 +206,10 @@ const deleteFollowing = async (req, res, next) => {
 };
 
 module.exports = Object.freeze({
+  findAllWhoIFollow,
+  findAllWhoFollowMe,
+  findAllMyReceivedFollowRequests,
+
   follow,
   unfollow,
   approveFollowing,

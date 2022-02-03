@@ -4,6 +4,11 @@ const POST_SERVICE_QUEUES = {
   findPostById:               "postService_findPostById",
   findPostsByUserId:          "postService_findPostsByUserId",
   create:                     "postService_create",
+
+  changeLikedPost:            "postService_changeLikedPost",
+  changeDislikedPost:         "postService_changeDislikedPost",
+
+  createComment:              "postService_createComment"
 };
 
 
@@ -28,9 +33,34 @@ const create = async ({ authorUserId, postData, imageInfo }) => {
   });
 };
 
+const changeLikedPost = async ({ userId, toLikePostId, isLiked }) => {
+  return await sendRequest({
+    request: { userId, toLikePostId, isLiked },
+    queue: POST_SERVICE_QUEUES.changeLikedPost
+  });
+};
+
+const changeDislikedPost = async ({ userId, toDislikePostId, isDisliked }) => {
+  return await sendRequest({
+    request: { userId, toDislikePostId, isDisliked },
+    queue: POST_SERVICE_QUEUES.changeDislikedPost
+  });
+};
+
+const createComment = async ({ postId, authorId, text }) => {
+  return await sendRequest({
+    request: { postId, authorId, text },
+    queue: POST_SERVICE_QUEUES.createComment
+  });
+};
+
 
 module.exports = Object.freeze({
   findPostById,
   findPostsByUserId,
-  create
+  create,
+  createComment,
+
+  changeLikedPost,
+  changeDislikedPost
 });

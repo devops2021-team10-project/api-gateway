@@ -27,6 +27,27 @@ const findByUserIds = async ({ followerUserId, followedUserId }) => {
   });
 };
 
+const findAllWhoIFollow = async ({ followerUserId }) => {
+  return await sendRequest({
+    request: { followerUserId },
+    queue: FOLLOWING_SERVICE_QUEUES.findAllWhoIFollow
+  });
+};
+
+const findAllWhoFollowMe = async ({ followedUserId }) => {
+  return await sendRequest({
+    request: { followedUserId },
+    queue: FOLLOWING_SERVICE_QUEUES.findAllWhoFollowMe
+  });
+};
+
+const findAllMyReceivedFollowRequests = async ({ followedUserId }) => {
+  return await sendRequest({
+    request: { followedUserId },
+    queue: FOLLOWING_SERVICE_QUEUES.findAllMyReceivedFollowRequests
+  });
+};
+
 const follow = async ({ followerUserId, followedUserId }) => {
   return await sendRequest({
     request: { followerUserId, followedUserId },
@@ -85,6 +106,9 @@ const deleteFollowing = async ({ followerUserId, followedUserId }) => {
 
 module.exports = Object.freeze({
   findByUserIds,
+  findAllWhoIFollow,
+  findAllWhoFollowMe,
+  findAllMyReceivedFollowRequests,
 
   follow,
   unfollow,
