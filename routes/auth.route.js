@@ -36,6 +36,44 @@ const regularUserLogin = async (req, res, next) => {
   }
 };
 
+const adminUserLogin = async (req, res, next) => {
+  try {
+
+    if (!authValidator.validateLogin(req.body)) {
+      throw { status: 400, msg: "Bad login data." };
+    }
+
+    const { accessToken, refreshToken } = await authService.login({
+      username: req.body.username,
+      password: req.body.password,
+      role: Role.admin
+    });
+
+    return res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken });
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
+const agentUserLogin = async (req, res, next) => {
+  try {
+
+    if (!authValidator.validateLogin(req.body)) {
+      throw { status: 400, msg: "Bad login data." };
+    }
+
+    const { accessToken, refreshToken } = await authService.login({
+      username: req.body.username,
+      password: req.body.password,
+      role: Role.agent
+    });
+
+    return res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken });
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
 const findByJWTHeader = async (req, res, next) => {
   try {
     return res.status(200).json(regularUserFormatter.format(req.user));
@@ -66,6 +104,9 @@ const findByJWTValue = async (req, res, next) => {
 
 module.exports = Object.freeze({
   regularUserLogin,
+  adminUserLogin,
+  agentUserLogin,
+
   findByJWTHeader,
   findByJWTValue
 });

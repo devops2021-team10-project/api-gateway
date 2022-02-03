@@ -32,7 +32,6 @@ const findPostById = async (req, res, next) => {
 
 
 const findPostsByUserId = async (req, res, next) => {
-  console.log("ENTER");
   try {
     const userId = req.params.userId;
     if (!userId) {
@@ -103,6 +102,35 @@ const create = async (req, res, next) => {
   }
 };
 
+const createComment = async (req, res, next) => {
+  try {
+    if (!postValidator.validateCreateComment(req.body)) {
+      throw { status: 400, msg: "Bad data." };
+    }
+
+    const serviceResponse1 = await postServiceAPI.findPostById({ postId: req.body.postId });
+    if (serviceResponse1.isError) {
+      throw { status: 400, msg: serviceResponse1.error };
+    }
+    const post = serviceResponse1.data;
+    await checkCondition({followerUserId: req.user.id, followedUserId: post.authorUserId});
+
+    const serviceResponse2 = await postServiceAPI.createComment({
+      postId: req.body.postId,
+      authorId: req.user.id,
+      text: req.body.text
+    });
+    if (serviceResponse2.isError) {
+      throw { status: 400, msg: serviceResponse2.error };
+    }
+
+    return res.status(200).json(serviceResponse2.data);
+
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
 
 const changeLikedPost = async (req, res, next) => {
   try {
@@ -166,11 +194,13 @@ const changeDislikedPost = async (req, res, next) => {
 };
 
 
+
 module.exports = Object.freeze({
   findPostById,
   findPostsByUserId,
   findPostImageByPostId,
   create,
+  createComment,
 
   changeLikedPost,
   changeDislikedPost

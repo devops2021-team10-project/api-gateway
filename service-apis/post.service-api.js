@@ -7,6 +7,8 @@ const POST_SERVICE_QUEUES = {
 
   changeLikedPost:            "postService_changeLikedPost",
   changeDislikedPost:         "postService_changeDislikedPost",
+
+  createComment:              "postService_createComment"
 };
 
 
@@ -45,11 +47,19 @@ const changeDislikedPost = async ({ userId, toDislikePostId, isDisliked }) => {
   });
 };
 
+const createComment = async ({ postId, authorId, text }) => {
+  return await sendRequest({
+    request: { postId, authorId, text },
+    queue: POST_SERVICE_QUEUES.createComment
+  });
+};
+
 
 module.exports = Object.freeze({
   findPostById,
   findPostsByUserId,
   create,
+  createComment,
 
   changeLikedPost,
   changeDislikedPost

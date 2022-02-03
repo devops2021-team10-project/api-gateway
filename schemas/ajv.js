@@ -32,6 +32,7 @@ module.exports = Object.freeze({
   postValidator: {
     validateCreate: ajv.compile(require('./post/create')),
     validateChangeLikedPost: ajv.compile(require('./post/changeLikedPost')),
-    validateChangeDislikedPost: ajv.compile(require('./post/changeLikedPost'))
+    validateChangeDislikedPost: ajv.compile(require('./post/changeDislikedPost')),
+    validateCreateComment: ajv.compile(require('./post/createComment'))
   }
 });
