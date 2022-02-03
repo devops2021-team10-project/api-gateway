@@ -9,7 +9,7 @@ const { authValidator } = require('../schemas/ajv');
 const regularUserFormatter = require('../formatters/user/regular-user.formatter');
 
 // Util
-const { handleError } = require('../../user-service/utils/error');
+const { handleError } = require('../utils/error');
 const { verifyJWT } = require('../utils/jwt');
 
 // Services

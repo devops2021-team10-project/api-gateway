@@ -10,3 +10,5 @@ RUN npm install
 # Copy code
 COPY ./ ./
 
+COPY ./.env.docker ./.env
+
