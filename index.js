@@ -49,6 +49,9 @@ app.delete('/api/v1/user', authenticateUser(), authorizeRoles([roleEnum.regular]
 
 
 // POST API ROUTES
+app.get('/api/v1/post/feed', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.getMyFeed);
+app.get('/api/v1/post/allILike', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.findAllPostsILike);
+app.get('/api/v1/post/allIDislike', authenticateUser(), authorizeRoles([roleEnum.regular]), postRouter.findAllPostsIDislike);
 app.get('/api/v1/post/:postId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostById);
 app.get('/api/v1/post/allByUser/:userId', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostsByUserId);
 app.get('/api/v1/post/:postId/image', authenticateUser({passTheError: true}), authorizeRoles([roleEnum.regular]), postRouter.findPostImageByPostId);

@@ -2,8 +2,11 @@ const sendRequest = require('../msgBroker/genericRequest');
 
 const POST_SERVICE_QUEUES = {
   findPostById:               "postService_findPostById",
+  findAllPostsILike:          "postService_findAllPostsILike",
+  findAllPostsIDislike:       "postService_findAllPostsIDislike",
   findPostsByUserId:          "postService_findPostsByUserId",
   create:                     "postService_create",
+  createCampaign:             "postService_createCampaign",
 
   changeLikedPost:            "postService_changeLikedPost",
   changeDislikedPost:         "postService_changeDislikedPost",
@@ -16,6 +19,20 @@ const findPostById = async ({ postId }) => {
   return await sendRequest({
     request: { postId },
     queue: POST_SERVICE_QUEUES.findPostById
+  });
+};
+
+const findAllPostsILike = async ({ userId }) => {
+  return await sendRequest({
+    request: { userId },
+    queue: POST_SERVICE_QUEUES.findAllPostsILike
+  });
+};
+
+const findAllPostsIDislike = async ({ userId }) => {
+  return await sendRequest({
+    request: { userId },
+    queue: POST_SERVICE_QUEUES.findAllPostsIDislike
   });
 };
 
@@ -57,6 +74,8 @@ const createComment = async ({ postId, authorId, text }) => {
 
 module.exports = Object.freeze({
   findPostById,
+  findAllPostsILike,
+  findAllPostsIDislike,
   findPostsByUserId,
   create,
   createComment,

@@ -8,6 +8,7 @@ const { checkCondition } = require('../middleware/authorizeFollowing.middleware'
 
 // Microservice calls
 const postServiceAPI = require('../service-apis/post.service-api');
+const followingServiceAPI = require('../service-apis/following.service-api');
 
 
 const findPostById = async (req, res, next) => {
@@ -22,9 +23,57 @@ const findPostById = async (req, res, next) => {
     }
     const post = serviceResponse.data;
 
-    await checkCondition({followerUserId: req.user?.id, followedUserId: post.authorUserId});
+    if (!post) {
+      return res.status(200).json({});
+    }
+
+    await checkCondition({followerUserId: req.user?.id, followedUserId: post?.authorUserId});
 
     return res.status(200).json(post);
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
+const findAllPostsILike = async (req, res, next) => {
+  try {
+    const serviceResponse = await postServiceAPI.findAllPostsILike({ userId: req.user.id });
+    if (serviceResponse.isError) {
+      throw { status: 400, msg: serviceResponse.error };
+    }
+    const posts = serviceResponse.data;
+
+    let finalPostArray = [];
+    for (const p of posts) {
+      try {
+        await checkCondition({followerUserId: req.user.id, followedUserId: p.authorUserId});
+        finalPostArray.push(p);
+      } catch (err) {
+      }
+    }
+    return res.status(200).json(finalPostArray);
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
+const findAllPostsIDislike = async (req, res, next) => {
+  try {
+    const serviceResponse = await postServiceAPI.findAllPostsIDislike({ userId: req.user.id });
+    if (serviceResponse.isError) {
+      throw { status: 400, msg: serviceResponse.error };
+    }
+    const posts = serviceResponse.data;
+
+    let finalPostArray = [];
+    for (const p of posts) {
+      try {
+        await checkCondition({followerUserId: req.user.id, followedUserId: p.authorUserId});
+        finalPostArray.push(p);
+      } catch (err) {
+      }
+    }
+    return res.status(200).json(finalPostArray);
   } catch(err) {
     handleError(err, res);
   }
@@ -44,6 +93,42 @@ const findPostsByUserId = async (req, res, next) => {
       throw { status: 400, msg: serviceResponse.error };
     }
     const posts = serviceResponse.data;
+    return res.status(200).json(posts);
+  } catch(err) {
+    handleError(err, res);
+  }
+};
+
+
+const getMyFeed = async (req, res, next) => {
+  try {
+
+    const serviceResponse1 = await followingServiceAPI.findAllWhoIFollow({followerUserId: req.user.id});
+    if (serviceResponse1.isError) {
+      throw { status: 400, msg: serviceResponse1.error };
+    }
+
+    let posts = [];
+    const allWhoIFollow = serviceResponse1.data;
+
+    for (const f of allWhoIFollow) {
+      const serviceResponse2 = await postServiceAPI.findPostsByUserId({ userId: f.followedUserId });
+      if (serviceResponse2.isError) {
+        throw { status: 400, msg: serviceResponse2.error };
+      }
+      const hisPosts = serviceResponse2.data;
+
+      posts = [...posts, ...hisPosts];
+    }
+
+
+    function compare(a, b) {
+      if (a.createdAt > b.createdAt) return -1;
+      if (a.createdAt < b.createdAt) return 1;
+      return 0;
+    }
+    posts.sort(compare);
+
     return res.status(200).json(posts);
   } catch(err) {
     handleError(err, res);
@@ -196,7 +281,10 @@ const changeDislikedPost = async (req, res, next) => {
 
 
 module.exports = Object.freeze({
+  getMyFeed,
   findPostById,
+  findAllPostsILike,
+  findAllPostsIDislike,
   findPostsByUserId,
   findPostImageByPostId,
   create,
